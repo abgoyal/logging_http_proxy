@@ -25,12 +25,12 @@ exist in the current working directory.
 
 It listens on two ports (default 8080 for http and 8081 for https). The https port is always 1 plus the http port. 
 
-For https, it generates self-signed certs on the fly and saves them in the current working directory. If you want to use
-your own cert and key, just place them with the right filenames in the working directory and they will be used. 
+For https, it generates self-signed certs on the fly and saves them in the current working directory. 
 
 If you use the self-signed certs, you may need to click-thru warnings from your browser and/or add the cert to your browser
 trust store.
 
+If you want to use your own cert and key, just place them with the right filenames in the working directory and they will be used. 
 
 # compiling
 
