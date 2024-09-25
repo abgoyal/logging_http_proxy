@@ -24,16 +24,16 @@ jobs:
 
       # Build binaries
       - name: Build Linux binary (x64)
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o htproxy-linux-amd64
+        run: GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o htproxy-linux-amd64
 
       - name: Build Linux ARM64 binary
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o htproxy-linux-arm64
+        run: GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o htproxy-linux-arm64
 
       - name: Build Windows binary (x64)
-        run: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o htproxy-windows-amd64.exe
+        run: GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o htproxy-windows-amd64.exe
 
       - name: Build macOS binary (x64)
-        run: CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o htproxy-darwin-amd64
+        run: GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o htproxy-darwin-amd64
 
       # Set version based on date and time (Use Environment Files)
       - name: Set version based on date and time
