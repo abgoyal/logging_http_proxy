@@ -1,0 +1,99 @@
+name: Build and Release HTProxy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build binaries for Linux, Windows, macOS, and Linux ARM64
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Go mod tidy
+        run: go mod tidy
+
+      # Build binaries
+      - name: Build Linux binary (x64)
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o htproxy-linux-amd64
+
+      - name: Build Linux ARM64 binary
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o htproxy-linux-arm64
+
+      - name: Build Windows binary (x64)
+        run: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o htproxy-windows-amd64.exe
+
+      - name: Build macOS binary (x64)
+        run: CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o htproxy-darwin-amd64
+
+      # Set version based on date and time
+      - name: Set version based on date and time
+        id: version
+        run: echo ::set-output name=version::v$(date +'%y%m%d.%H%M')
+
+      # Create a new GitHub release
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          release_name: "Release ${{ steps.version.outputs.version }}"
+          draft: false
+          prerelease: false
+
+      # Upload Linux (x64) binary
+      - name: Upload Linux binary (x64) to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./htproxy-linux-amd64
+          asset_name: htproxy-linux-amd64
+          asset_content_type: application/octet-stream
+
+      # Upload Linux (ARM64) binary
+      - name: Upload Linux ARM64 binary to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./htproxy-linux-arm64
+          asset_name: htproxy-linux-arm64
+          asset_content_type: application/octet-stream
+
+      # Upload Windows binary
+      - name: Upload Windows binary to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./htproxy-windows-amd64.exe
+          asset_name: htproxy-windows-amd64.exe
+          asset_content_type: application/octet-stream
+
+      # Upload macOS binary
+      - name: Upload macOS binary to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./htproxy-darwin-amd64
+          asset_name: htproxy-darwin-amd64
+          asset_content_type: application/octet-stream
