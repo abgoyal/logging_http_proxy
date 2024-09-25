@@ -109,7 +109,7 @@ func generateSelfSignedCert(certFile, keyFile string) error {
 	template := x509.Certificate{
 		SerialNumber: big.NewInt(1),
 		Subject: pkix.Name{
-			Organization: []string{"Go Proxy Self-Signed"},
+			Organization: []string{"HTPROXY Self-Signed Cert"},
 		},
 		NotBefore: time.Now(),
 		NotAfter:  time.Now().Add(365 * 24 * time.Hour),
