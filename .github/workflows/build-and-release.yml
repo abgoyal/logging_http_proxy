@@ -45,10 +45,9 @@ jobs:
       - name: Build macOS binary (x64)
         run: CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o htproxy-darwin-amd64
 
-      # Set version based on date and time
+      # Set version based on date and time (Use Environment Files)
       - name: Set version based on date and time
-        id: version
-        run: echo ::set-output name=version::v$(date +'%y%m%d.%H%M')
+        run: echo "VERSION=v$(date +'%y%m%d.%H%M')" >> $GITHUB_ENV
 
       # Create a new GitHub release
       - name: Create GitHub Release
@@ -57,8 +56,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.version.outputs.version }}
-          release_name: "Release ${{ steps.version.outputs.version }}"
+          tag_name: ${{ env.VERSION }}
+          release_name: "Release ${{ env.VERSION }}"
           draft: false
           prerelease: false
 
